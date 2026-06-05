@@ -1,5 +1,5 @@
 from .database_service import UserService, ProgramService, WorkoutService, ExerciseLogService
-from .program_generator import ProgramGenerator, create_program
+from .professional_program_generator import create_professional_program
 from .analytics_service import AnalyticsService
 from .recommendation_service import RecommendationService
 
@@ -8,8 +8,7 @@ __all__ = [
     "ProgramService",
     "WorkoutService",
     "ExerciseLogService",
-    "ProgramGenerator",
-    "create_program",
+    "create_professional_program",
     "AnalyticsService",
     "RecommendationService"
 ]

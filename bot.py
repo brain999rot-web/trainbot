@@ -11,15 +11,15 @@ from handlers import (
     progress_handlers,
     analytics_handlers,
     timer_handlers,
-    exercise_database_handlers
+    exercise_database_handlers,
+    strength_calculator_handlers,
+    favorites_records_handlers
 )
 from services.reminder_service import ReminderService
+from utils.error_handler import configure_logging, setup_error_middleware
 
 # Налаштування логування
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
+configure_logging("INFO")
 logger = logging.getLogger(__name__)
 
 
@@ -28,13 +28,20 @@ async def main():
     logger.info("Запуск бота...")
 
     # Ініціалізація бази даних
-    await init_db()
-    logger.info("База даних ініціалізована")
+    try:
+        await init_db()
+        logger.info("База даних ініціалізована")
+    except Exception as e:
+        logger.error(f"Помилка ініціалізації БД: {e}")
+        return
 
     # Ініціалізація бота та диспетчера
     bot = Bot(token=BOT_TOKEN)
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
+
+    # Налаштування глобальної обробки помилок
+    await setup_error_middleware(dp)
 
     # Реєстрація роутерів
     dp.include_router(registration.router)
@@ -44,6 +51,8 @@ async def main():
     dp.include_router(analytics_handlers.router)
     dp.include_router(timer_handlers.router)
     dp.include_router(exercise_database_handlers.router)
+    dp.include_router(strength_calculator_handlers.router)
+    dp.include_router(favorites_records_handlers.router)
 
     logger.info("Роутери зареєстровані")
 
@@ -55,6 +64,8 @@ async def main():
     try:
         logger.info("Бот запущено успішно!")
         await dp.start_polling(bot)
+    except Exception as e:
+        logger.error(f"Критична помилка при роботі бота: {e}")
     finally:
         await reminder_service.stop()
         reminder_task.cancel()

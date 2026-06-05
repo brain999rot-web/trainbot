@@ -334,6 +334,14 @@ async def show_exercise_detail(callback: CallbackQuery):
 
     await callback.answer("📖 Завантажую...", show_alert=False)
 
+    # Перевіряємо чи вправа в улюблених
+    from database import async_session
+    from services.favorites_service import FavoritesService, RecordsService
+
+    async with async_session() as session:
+        is_fav = await FavoritesService.is_favorite(session, callback.from_user.id, exercise_name)
+        record = await RecordsService.get_user_record(session, callback.from_user.id, exercise_name)
+
     # Формуємо детальний опис
     text = f"🏋️ **{exercise.name}**\n\n"
     text += f"🎯 **Основний м'яз:** {exercise.primary_muscle}\n"
@@ -343,14 +351,41 @@ async def show_exercise_detail(callback: CallbackQuery):
     text += f"📊 **Складність:** {exercise.difficulty}\n"
     text += f"📝 **Опис:** {exercise.description}\n\n"
 
+    # Показуємо рекорд якщо є
+    if record:
+        text += "🏆 **Твій рекорд:**\n"
+        text += f"{record.best_weight}кг × {record.best_reps} повт. (1RM: {record.estimated_1rm:.1f}кг)\n\n"
+
     # Додаємо техніку виконання
     text += get_exercise_technique(exercise.name)
 
     from keyboards.main_keyboards import get_back_to_exercises_keyboard
+    from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+    buttons = []
+
+    # Кнопка додати/видалити з улюблених
+    if is_fav:
+        buttons.append([InlineKeyboardButton(
+            text="❌ Видалити з улюблених",
+            callback_data=f"remove_fav_{exercise_name}"
+        )])
+    else:
+        buttons.append([InlineKeyboardButton(
+            text="⭐ Додати в улюблені",
+            callback_data=f"add_to_fav_{exercise_name}"
+        )])
+
+    buttons.append([InlineKeyboardButton(
+        text="⬅️ Назад до вправ",
+        callback_data=f"back_to_muscle_{exercise.primary_muscle}"
+    )])
+
+    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     await callback.message.edit_text(
         text,
-        reply_markup=get_back_to_exercises_keyboard(exercise.primary_muscle),
+        reply_markup=keyboard,
         parse_mode="Markdown"
     )
 

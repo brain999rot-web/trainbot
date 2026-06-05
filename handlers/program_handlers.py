@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from sqlalchemy.ext.asyncio import AsyncSession
 from database import async_session
 from services.database_service import UserService, ProgramService
-from services.program_generator import create_program
+from services.professional_program_generator import create_professional_program
 from keyboards.main_keyboards import (
     get_goals_keyboard,
     get_confirm_program_keyboard
@@ -62,7 +62,7 @@ async def process_goal_selection(callback: CallbackQuery, state: FSMContext):
             return
 
         # Генеруємо програму
-        program_data = create_program(
+        program_data = create_professional_program(
             goal_name=goal_name,
             workouts_per_week=user.workouts_per_week,
             experience=user.experience
@@ -175,7 +175,7 @@ async def recalculate_program(message: Message):
         user = await UserService.get_user(session, message.from_user.id)
 
         # Генеруємо нову програму з тією ж метою
-        new_program_data = create_program(
+        new_program_data = create_professional_program(
             goal_name=program.goal,
             workouts_per_week=user.workouts_per_week,
             experience=user.experience

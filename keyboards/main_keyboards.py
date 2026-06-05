@@ -16,10 +16,14 @@ def get_main_menu_keyboard() -> ReplyKeyboardMarkup:
             ],
             [
                 KeyboardButton(text="📊 Аналітика"),
-                KeyboardButton(text="💡 Рекомендації")
+                KeyboardButton(text="🏅 Особисті рекорди")
             ],
             [
-                KeyboardButton(text="📚 База вправ"),
+                KeyboardButton(text="🏆 Калькулятор 1RM"),
+                KeyboardButton(text="📚 База вправ")
+            ],
+            [
+                KeyboardButton(text="⭐ Избранное"),
                 KeyboardButton(text="⏱ Таймер відпочинку")
             ],
             [
@@ -39,7 +43,8 @@ def get_gender_keyboard() -> InlineKeyboardMarkup:
             [
                 InlineKeyboardButton(text="👨 Чоловік", callback_data="gender_male"),
                 InlineKeyboardButton(text="👩 Жінка", callback_data="gender_female")
-            ]
+            ],
+            [InlineKeyboardButton(text="❌ Скасувати", callback_data="cancel_registration")]
         ]
     )
     return keyboard
@@ -51,7 +56,8 @@ def get_experience_keyboard() -> InlineKeyboardMarkup:
         inline_keyboard=[
             [InlineKeyboardButton(text="🌱 Початківець (0-6 місяців)", callback_data="exp_beginner")],
             [InlineKeyboardButton(text="💪 Середній (6-24 місяці)", callback_data="exp_intermediate")],
-            [InlineKeyboardButton(text="🏆 Досвідчений (2+ роки)", callback_data="exp_advanced")]
+            [InlineKeyboardButton(text="🏆 Досвідчений (2+ роки)", callback_data="exp_advanced")],
+            [InlineKeyboardButton(text="❌ Скасувати", callback_data="cancel_registration")]
         ]
     )
     return keyboard
@@ -66,7 +72,8 @@ def get_workouts_per_week_keyboard() -> InlineKeyboardMarkup:
                 InlineKeyboardButton(text="4", callback_data="wpw_4"),
                 InlineKeyboardButton(text="5", callback_data="wpw_5"),
                 InlineKeyboardButton(text="6", callback_data="wpw_6")
-            ]
+            ],
+            [InlineKeyboardButton(text="❌ Скасувати", callback_data="cancel_registration")]
         ]
     )
     return keyboard

@@ -143,6 +143,16 @@ class WorkoutService:
         workout_name: str
     ) -> Workout:
         """Створює нове тренування"""
+        # Перевіряємо чи існує програма
+        result = await session.execute(select(Program).where(Program.id == program_id))
+        program = result.scalar_one_or_none()
+
+        if not program:
+            raise ValueError(f"Program with id {program_id} not found")
+
+        if program.user_id != user_id:
+            raise ValueError(f"Program {program_id} does not belong to user {user_id}")
+
         workout = Workout(
             user_id=user_id,
             program_id=program_id,

@@ -12,13 +12,16 @@ from keyboards.main_keyboards import (
     get_workouts_per_week_keyboard
 )
 from states import RegistrationStates
+from utils.validators import InputValidator, ValidationError
+from utils.error_handler import safe_handler, handle_db_errors, StructuredLogger
 import logging
 
 router = Router()
-logger = logging.getLogger(__name__)
+logger = StructuredLogger(__name__)
 
 
 @router.message(CommandStart())
+@safe_handler
 async def cmd_start(message: Message, state: FSMContext):
     """Обробник команди /start"""
     async with async_session() as session:
@@ -28,13 +31,16 @@ async def cmd_start(message: Message, state: FSMContext):
             message.from_user.username
         )
 
+        logger.log_user_action(message.from_user.id, "start_command")
+
         # Перевіряємо чи заповнений профіль
         if not user.age or not user.workouts_per_week:
             await message.answer(
                 "👋 Вітаю! Я твій персональний тренер.\n\n"
                 "Щоб створити ідеальну програму тренувань, мені потрібно дізнатися трохи про тебе.\n\n"
                 "📝 Давай заповнимо анкету!\n\n"
-                "Скільки тобі років?",
+                "Скільки тобі років?\n\n"
+                "💡 Введіть /cancel щоб скасувати",
                 reply_markup=None
             )
             await state.set_state(RegistrationStates.age)
@@ -50,54 +56,45 @@ async def cmd_start(message: Message, state: FSMContext):
 async def process_age(message: Message, state: FSMContext):
     """Обробка віку"""
     try:
-        age = int(message.text)
-        if age < 14 or age > 80:
-            await message.answer("❌ Будь ласка, введи реальний вік (14-80 років)")
-            return
-
+        age = InputValidator.validate_age(message.text)
         await state.update_data(age=age)
-        await message.answer("📏 Який у тебе зріст? (у см, наприклад: 175)")
+        await message.answer(
+            "📏 Який у тебе зріст? (у см, наприклад: 175)\n\n"
+            "💡 Введіть /cancel щоб скасувати"
+        )
         await state.set_state(RegistrationStates.height)
-
-    except ValueError:
-        await message.answer("❌ Будь ласка, введи вік числом")
+    except ValidationError as e:
+        await message.answer(str(e))
 
 
 @router.message(RegistrationStates.height)
 async def process_height(message: Message, state: FSMContext):
     """Обробка зросту"""
     try:
-        height = float(message.text)
-        if height < 140 or height > 230:
-            await message.answer("❌ Будь ласка, введи реальний зріст (140-230 см)")
-            return
-
+        height = InputValidator.validate_height(message.text)
         await state.update_data(height=height)
-        await message.answer("⚖️ Яка твоя вага? (у кг, наприклад: 75)")
+        await message.answer(
+            "⚖️ Яка твоя вага? (у кг, наприклад: 75)\n\n"
+            "💡 Введіть /cancel щоб скасувати"
+        )
         await state.set_state(RegistrationStates.weight)
-
-    except ValueError:
-        await message.answer("❌ Будь ласка, введи зріст числом")
+    except ValidationError as e:
+        await message.answer(str(e))
 
 
 @router.message(RegistrationStates.weight)
 async def process_weight(message: Message, state: FSMContext):
     """Обробка ваги"""
     try:
-        weight = float(message.text)
-        if weight < 40 or weight > 200:
-            await message.answer("❌ Будь ласка, введи реальну вагу (40-200 кг)")
-            return
-
+        weight = InputValidator.validate_body_weight(message.text)
         await state.update_data(weight=weight)
         await message.answer(
             "👤 Обери свою стать:",
             reply_markup=get_gender_keyboard()
         )
         await state.set_state(RegistrationStates.gender)
-
-    except ValueError:
-        await message.answer("❌ Будь ласка, введи вагу числом")
+    except ValidationError as e:
+        await message.answer(str(e))
 
 
 @router.callback_query(RegistrationStates.gender, F.data.startswith("gender_"))
@@ -138,6 +135,7 @@ async def process_experience(callback: CallbackQuery, state: FSMContext):
 
 
 @router.callback_query(RegistrationStates.workouts_per_week, F.data.startswith("wpw_"))
+@safe_handler
 async def process_workouts_per_week(callback: CallbackQuery, state: FSMContext):
     """Обробка кількості тренувань"""
     workouts_per_week = int(callback.data.split("_")[1])
@@ -149,39 +147,66 @@ async def process_workouts_per_week(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
 
     async with async_session() as session:
-        try:
-            await UserService.update_user_profile(
-                session,
-                callback.from_user.id,
-                age=data["age"],
-                height=data["height"],
-                weight=data["weight"],
-                gender=data["gender"],
-                experience=data["experience"],
-                workouts_per_week=workouts_per_week
-            )
+        await UserService.update_user_profile(
+            session,
+            callback.from_user.id,
+            age=data["age"],
+            height=data["height"],
+            weight=data["weight"],
+            gender=data["gender"],
+            experience=data["experience"],
+            workouts_per_week=workouts_per_week
+        )
 
-            await callback.message.delete()
-            await callback.message.answer(
-                "✅ Профіль заповнено!\n\n"
-                f"📊 Твої дані:\n"
-                f"• Вік: {data['age']} років\n"
-                f"• Зріст: {data['height']} см\n"
-                f"• Вага: {data['weight']} кг\n"
-                f"• Стать: {data['gender']}\n"
-                f"• Досвід: {data['experience']}\n"
-                f"• Тренувань на тиждень: {workouts_per_week}\n\n"
-                "Тепер можеш створити свою першу програму! 🏋️",
-                reply_markup=get_main_menu_keyboard()
-            )
-            await state.clear()
-        except Exception as e:
-            logger.error(f"Помилка при збереженні профілю: {e}")
-            await callback.message.answer(
-                "❌ **Помилка при збереженні профілю**\n\n"
-                "Спробуй ще раз командою /start"
-            )
-            await state.clear()
+        logger.log_user_action(
+            callback.from_user.id,
+            "profile_completed",
+            {"workouts_per_week": workouts_per_week}
+        )
+
+        await callback.message.delete()
+        await callback.message.answer(
+            "✅ Профіль заповнено!\n\n"
+            f"📊 Твої дані:\n"
+            f"• Вік: {data['age']} років\n"
+            f"• Зріст: {data['height']} см\n"
+            f"• Вага: {data['weight']} кг\n"
+            f"• Стать: {data['gender']}\n"
+            f"• Досвід: {data['experience']}\n"
+            f"• Тренувань на тиждень: {workouts_per_week}\n\n"
+            "Тепер можеш створити свою першу програму! 🏋️",
+            reply_markup=get_main_menu_keyboard()
+        )
+        await state.clear()
+
+
+@router.callback_query(F.data == "cancel_registration")
+async def cancel_registration(callback: CallbackQuery, state: FSMContext):
+    """Скасування реєстрації"""
+    await state.clear()
+    await callback.message.edit_text(
+        "❌ Реєстрацію скасовано.\n\n"
+        "Для початку використай /start"
+    )
+    await callback.answer()
+
+
+@router.message(Command("cancel"))
+async def cmd_cancel(message: Message, state: FSMContext):
+    """Команда скасування"""
+    current_state = await state.get_state()
+    if current_state:
+        await state.clear()
+        await message.answer(
+            "❌ Дію скасовано.\n\n"
+            "Використай /start або обери дію з меню.",
+            reply_markup=get_main_menu_keyboard()
+        )
+    else:
+        await message.answer(
+            "Нічого скасовувати. Обери дію з меню:",
+            reply_markup=get_main_menu_keyboard()
+        )
 
 
 @router.message(Command("menu"))
@@ -330,7 +355,7 @@ async def recalc_from_settings(callback: CallbackQuery):
     """Пересчитати програму з налаштувань"""
     async with async_session() as session:
         from services.database_service import ProgramService
-        from services.program_generator import create_program
+        from services.professional_program_generator import create_professional_program
 
         program = await ProgramService.get_active_program(session, callback.from_user.id)
 
@@ -345,7 +370,7 @@ async def recalc_from_settings(callback: CallbackQuery):
         user = await UserService.get_user(session, callback.from_user.id)
 
         # Генеруємо нову програму з тією ж метою
-        new_program_data = create_program(
+        new_program_data = create_professional_program(
             goal_name=program.goal,
             workouts_per_week=user.workouts_per_week,
             experience=user.experience

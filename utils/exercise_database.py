@@ -1,5 +1,14 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 from dataclasses import dataclass
+
+
+@dataclass
+class ExerciseVariation:
+    """Варіація вправи (нахил, хват, тощо)"""
+    name: str
+    angle: Optional[str] = None  # "30°", "45°", "decline"
+    grip: Optional[str] = None  # "широкий", "вузький", "нейтральний", "зворотній"
+    description: Optional[str] = None
 
 
 @dataclass
@@ -10,6 +19,14 @@ class ExerciseData:
     secondary_muscles: str
     difficulty: str
     description: str
+    variations: List[ExerciseVariation] = None
+    alternative_equipment: List[str] = None  # Альтернативне обладнання
+
+    def __post_init__(self):
+        if self.variations is None:
+            self.variations = []
+        if self.alternative_equipment is None:
+            self.alternative_equipment = []
 
 
 EXERCISE_DATABASE: List[ExerciseData] = [
