@@ -247,7 +247,18 @@ async def help_handler(message: Message):
 
 Питання? Пиши /support
     """
-    await message.answer(help_text)
+    await message.answer(help_text, reply_markup=get_main_menu_keyboard())
+
+
+@router.message(Command("menu"))
+@safe_handler
+async def cmd_menu(message: Message):
+    """Показати головне меню"""
+    await message.answer(
+        "📱 **Головне меню**\n\nОбери дію:",
+        reply_markup=get_main_menu_keyboard(),
+        parse_mode="Markdown"
+    )
 
 
 @router.message(F.text == "⚙ Налаштування")
@@ -266,7 +277,9 @@ async def settings_handler(message: Message):
     await message.answer(
         "⚙️ **Налаштування**\n\n"
         "Обери розділ:",
-        reply_markup=keyboard
+        reply_markup=keyboard,
+        parse_mode="Markdown"
+    )
     )
 
 
