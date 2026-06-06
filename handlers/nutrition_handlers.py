@@ -5,7 +5,7 @@ from aiogram.fsm.context import FSMContext
 from datetime import date
 from database import async_session
 from services.nutrition_service import NutritionService
-from services.database_service import DatabaseService
+from services.database_service import UserService
 from utils.nutrition_calculator import NutritionCalculator
 from states.nutrition import NutritionCalculatorStates, NutritionLoggingStates
 from utils.error_handler import safe_handler, StructuredLogger
@@ -23,7 +23,7 @@ async def start_tdee_calculator(message: Message, state: FSMContext):
 
     # Отримуємо дані користувача
     async with async_session() as session:
-        user = await DatabaseService.get_user(session, message.from_user.id)
+        user = await UserService.get_user(session, message.from_user.id)
 
         if not user or not user.weight or not user.height or not user.age:
             await message.answer(

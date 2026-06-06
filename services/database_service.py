@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
+from sqlalchemy.exc import IntegrityError
 from models import User, Program, Workout, ExerciseLog
 from typing import Optional, List
 from datetime import datetime
@@ -18,10 +19,15 @@ class UserService:
         user = result.scalar_one_or_none()
 
         if not user:
-            user = User(telegram_id=telegram_id, username=username)
-            session.add(user)
-            await session.commit()
-            await session.refresh(user)
+            try:
+                user = User(telegram_id=telegram_id, username=username)
+                session.add(user)
+                await session.commit()
+                await session.refresh(user)
+            except IntegrityError:
+                await session.rollback()
+                result = await session.execute(select(User).where(User.telegram_id == telegram_id))
+                user = result.scalar_one_or_none()
 
         return user
 
