@@ -280,7 +280,6 @@ async def settings_handler(message: Message):
         reply_markup=keyboard,
         parse_mode="Markdown"
     )
-    )
 
 
 @router.callback_query(F.data == "settings_profile")
