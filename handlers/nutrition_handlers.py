@@ -170,15 +170,10 @@ async def recalculate_tdee(callback: CallbackQuery, state: FSMContext):
 
 
 @router.message(F.text == "📝 Записати їжу")
-@router.callback_query(F.data == "log_today_nutrition")
 @safe_handler
-async def start_nutrition_logging(event, state: FSMContext):
+async def start_nutrition_logging(message: Message, state: FSMContext):
     """Початок логування харчування"""
-    message = event.message if hasattr(event, 'message') else event
-    user_id = event.from_user.id
-
-    if isinstance(event, CallbackQuery):
-        await event.answer()
+    user_id = message.from_user.id
 
     # Перевіряємо чи є профіль
     async with async_session() as session:
@@ -208,6 +203,16 @@ async def start_nutrition_logging(event, state: FSMContext):
 
     await message.answer(prompt, parse_mode="Markdown")
     await state.set_state(NutritionLoggingStates.calories)
+
+
+@router.callback_query(F.data == "log_today_nutrition")
+@safe_handler
+async def start_nutrition_logging_callback(callback: CallbackQuery, state: FSMContext):
+    """Початок логування харчування через callback"""
+    await callback.answer()
+
+    # Викликаємо основну функцію
+    await start_nutrition_logging(callback.message, state)
 
 
 @router.message(NutritionLoggingStates.calories)

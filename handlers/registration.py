@@ -209,15 +209,6 @@ async def cmd_cancel(message: Message, state: FSMContext):
         )
 
 
-@router.message(Command("menu"))
-async def cmd_menu(message: Message):
-    """Показати головне меню"""
-    await message.answer(
-        "📱 Головне меню:",
-        reply_markup=get_main_menu_keyboard()
-    )
-
-
 @router.message(F.text == "📚 Довідка")
 async def help_handler(message: Message):
     """Довідка"""
