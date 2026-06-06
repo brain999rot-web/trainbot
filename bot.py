@@ -13,7 +13,8 @@ from handlers import (
     timer_handlers,
     exercise_database_handlers,
     strength_calculator_handlers,
-    favorites_records_handlers
+    favorites_records_handlers,
+    nutrition_handlers
 )
 from services.reminder_service import ReminderService
 from utils.error_handler import configure_logging, setup_error_middleware
@@ -53,6 +54,7 @@ async def main():
     dp.include_router(exercise_database_handlers.router)
     dp.include_router(strength_calculator_handlers.router)
     dp.include_router(favorites_records_handlers.router)
+    dp.include_router(nutrition_handlers.router)
 
     logger.info("Роутери зареєстровані")
 

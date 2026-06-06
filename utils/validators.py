@@ -28,6 +28,8 @@ class InputValidator:
     MAX_BODY_WEIGHT_KG = 300.0
     MIN_WORKOUTS_PER_WEEK = 2
     MAX_WORKOUTS_PER_WEEK = 6
+    MIN_CALORIES = 500
+    MAX_CALORIES = 10000
 
     @classmethod
     def validate_weight_reps(cls, input_str: str) -> Tuple[float, int]:

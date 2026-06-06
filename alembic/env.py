@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from database import Base
 from models import (
     user, program, workout, exercise_log, exercise, reminder,
-    exercise_history, user_equipment, favorite_exercise, personal_record
+    exercise_history, user_equipment, favorite_exercise, personal_record, nutrition
 )
 
 # this is the Alembic Config object, which provides

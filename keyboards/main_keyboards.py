@@ -19,15 +19,22 @@ def get_main_menu_keyboard() -> ReplyKeyboardMarkup:
                 KeyboardButton(text="🏅 Особисті рекорди")
             ],
             [
-                KeyboardButton(text="🏆 Калькулятор 1RM"),
-                KeyboardButton(text="📚 База вправ")
+                KeyboardButton(text="🍽 Калькулятор TDEE"),
+                KeyboardButton(text="📝 Записати їжу")
             ],
             [
-                KeyboardButton(text="⭐ Избранное"),
-                KeyboardButton(text="⏱ Таймер відпочинку")
+                KeyboardButton(text="📊 Статистика харчування"),
+                KeyboardButton(text="🏆 Калькулятор 1RM")
             ],
             [
-                KeyboardButton(text="⚙ Налаштування"),
+                KeyboardButton(text="📚 База вправ"),
+                KeyboardButton(text="⭐ Избранное")
+            ],
+            [
+                KeyboardButton(text="⏱ Таймер відпочинку"),
+                KeyboardButton(text="⚙ Налаштування")
+            ],
+            [
                 KeyboardButton(text="📚 Довідка")
             ]
         ],
