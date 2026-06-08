@@ -35,7 +35,8 @@ async def start_rest_timer(callback: CallbackQuery, state: FSMContext):
     if user_id in active_timers and active_timers[user_id].get("timer_id") == timer_id:
         await callback.message.answer(
             f"⏰ **Відпочинок закінчено!**\n\n"
-            f"Час для наступного підходу 💪"
+            f"Час для наступного підходу 💪",
+            parse_mode="Markdown"
         )
         del active_timers[user_id]
 
@@ -65,7 +66,8 @@ async def timer_menu(message: Message):
     await message.answer(
         "⏱ **Таймер відпочинку**\n\n"
         "Обери час відпочинку між підходами:",
-        reply_markup=keyboard
+        reply_markup=keyboard,
+        parse_mode="Markdown"
     )
 
 
