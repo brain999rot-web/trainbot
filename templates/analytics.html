@@ -30,14 +30,14 @@
             <div class="record-card">
                 <div class="record-header">
                     <h3>{{ record.exercise_name }}</h3>
-                    <span class="record-date">{{ record.date_achieved.strftime('%d.%m.%Y') }}</span>
+                    <span class="record-date">{{ record.achieved_at.strftime('%d.%m.%Y') }}</span>
                 </div>
                 <div class="record-value">
-                    <strong>{{ record.weight }} кг</strong> × {{ record.reps }} повторень
+                    <strong>{{ record.best_weight }} кг</strong> × {{ record.best_reps }} повторень
                 </div>
-                {% if record.notes %}
-                <p class="record-notes">{{ record.notes }}</p>
-                {% endif %}
+                <div class="record-1rm">
+                    Розрахунковий 1RM: <strong>{{ record.estimated_1rm|round(1) }} кг</strong>
+                </div>
             </div>
             {% endfor %}
         </div>

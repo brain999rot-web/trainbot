@@ -257,7 +257,11 @@ def view_program(program_id):
     program = db_session.query(Program).filter_by(
         id=program_id,
         user_id=user.telegram_id
-    ).first_or_404()
+    ).first()
+
+    if not program:
+        flash('Програму не знайдено', 'danger')
+        return redirect(url_for('programs'))
 
     return render_template('view_program.html', program=program)
 
@@ -280,7 +284,11 @@ def view_workout(workout_id):
     workout = db_session.query(Workout).filter_by(
         id=workout_id,
         user_id=user.telegram_id
-    ).first_or_404()
+    ).first()
+
+    if not workout:
+        flash('Тренування не знайдено', 'danger')
+        return redirect(url_for('workouts'))
 
     return render_template('view_workout.html', workout=workout)
 
@@ -325,7 +333,7 @@ def analytics():
     # Персональні рекорди
     records = db_session.query(PersonalRecord).filter_by(
         user_id=user.telegram_id
-    ).order_by(desc(PersonalRecord.date_achieved)).limit(10).all()
+    ).order_by(desc(PersonalRecord.achieved_at)).limit(10).all()
 
     return render_template('analytics.html',
                           total_workouts=total_workouts,
