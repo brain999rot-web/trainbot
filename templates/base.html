@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TrainBot{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="{{ url_for('index') }}" class="logo">💪 TrainBot</a>
+            {% if session.user_id %}
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('dashboard') }}">Головна</a></li>
+                <li><a href="{{ url_for('programs') }}">Програми</a></li>
+                <li><a href="{{ url_for('workouts') }}">Тренування</a></li>
+                <li><a href="{{ url_for('nutrition') }}">Харчування</a></li>
+                <li><a href="{{ url_for('analytics') }}">Аналітика</a></li>
+                <li><a href="{{ url_for('profile') }}">Профіль</a></li>
+                <li><a href="{{ url_for('logout') }}" class="btn-logout">Вийти</a></li>
+            </ul>
+            {% else %}
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('login') }}" class="btn-primary">Увійти</a></li>
+                <li><a href="{{ url_for('register') }}" class="btn-secondary">Реєстрація</a></li>
+            </ul>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 TrainBot. Всі права захищені.</p>
+        </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

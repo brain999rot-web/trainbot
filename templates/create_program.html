@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Створення програми - TrainBot{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h1>Створення програми тренувань</h1>
+
+    <form method="POST" action="{{ url_for('create_program') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="form-group">
+            <label for="goal">Мета програми *</label>
+            <select id="goal" name="goal" class="form-control" required>
+                <option value="">Оберіть мету</option>
+                <option value="strength">Сила</option>
+                <option value="hypertrophy">М'язова маса</option>
+                <option value="endurance">Витривалість</option>
+                <option value="weight_loss">Схуднення</option>
+                <option value="general_fitness">Загальна фітнес</option>
+            </select>
+            <small class="form-text">Оберіть основну мету вашої програми тренувань</small>
+        </div>
+
+        <div class="form-group">
+            <label for="split_type">Тип сплиту *</label>
+            <select id="split_type" name="split_type" class="form-control" required>
+                <option value="">Оберіть тип</option>
+                <option value="full_body">Full Body (все тіло)</option>
+                <option value="upper_lower">Upper/Lower (верх/низ)</option>
+                <option value="push_pull_legs">Push/Pull/Legs</option>
+                <option value="bro_split">Bro Split (м'язові групи)</option>
+            </select>
+            <small class="form-text">Розподіл м'язових груп по тренувальним дням</small>
+        </div>
+
+        <div class="form-group">
+            <label for="workouts_per_week">Тренувань на тиждень *</label>
+            <select id="workouts_per_week" name="workouts_per_week" class="form-control" required>
+                <option value="">Оберіть кількість</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+            </select>
+            <small class="form-text">Скільки разів на тиждень ви плануєте тренуватись</small>
+        </div>
+
+        <div class="info-box">
+            <strong>ℹ️ Порада:</strong>
+            <p>Програма буде автоматично згенерована на основі ваших параметрів профілю та обраних налаштувань.</p>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Створити програму</button>
+            <a href="{{ url_for('programs') }}" class="btn btn-secondary">Скасувати</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

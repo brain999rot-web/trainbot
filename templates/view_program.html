@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}{{ program.goal }} - TrainBot{% endblock %}
+
+{% block content %}
+<div class="program-detail">
+    <div class="page-header">
+        <div>
+            <h1>{{ program.goal }}</h1>
+            {% if program.is_active %}
+            <span class="badge badge-success">Активна програма</span>
+            {% endif %}
+        </div>
+        <a href="{{ url_for('programs') }}" class="btn btn-secondary">Назад до програм</a>
+    </div>
+
+    <div class="program-info-card">
+        <div class="info-row">
+            <div class="info-item">
+                <span class="info-label">Тип сплиту:</span>
+                <span class="info-value">{{ program.split_type }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Тренувань/тиждень:</span>
+                <span class="info-value">{{ program.workouts_per_week }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Тижнів завершено:</span>
+                <span class="info-value">{{ program.weeks_completed }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Створено:</span>
+                <span class="info-value">{{ program.created_at.strftime('%d.%m.%Y') }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="program-workouts">
+        <h2>Тренування програми</h2>
+        {% if program.program_data and program.program_data.workouts %}
+        <div class="workouts-list">
+            {% for day, exercises in program.program_data.workouts.items() %}
+            <div class="workout-day-card">
+                <h3>{{ day }}</h3>
+                <ul class="exercises-list">
+                    {% for exercise in exercises %}
+                    <li>{{ exercise }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">Програма ще не заповнена вправами</p>
+        {% endif %}
+    </div>
+
+    <div class="program-stats">
+        <h2>Статистика по програмі</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ program.workouts|length }}</div>
+                <div class="stat-label">Виконано тренувань</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

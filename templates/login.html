@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Вхід - TrainBot{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h1>Вхід до системи</h1>
+        <form method="POST" action="{{ url_for('login') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label for="user_id">ID користувача (Telegram ID)</label>
+                <input type="text" id="user_id" name="user_id" required class="form-control" placeholder="123456789">
+                <small class="form-text">Ваш ID з Telegram. Можна отримати у боті @userinfobot</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Увійти</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Ще не зареєстровані? <a href="{{ url_for('register') }}">Створити акаунт</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

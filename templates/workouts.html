@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Тренування - TrainBot{% endblock %}
+
+{% block content %}
+<div class="workouts-container">
+    <div class="page-header">
+        <h1>Історія тренувань</h1>
+    </div>
+
+    {% if workouts %}
+    <div class="workouts-timeline">
+        {% for workout in workouts %}
+        <div class="workout-card">
+            <div class="workout-header">
+                <h3>{{ workout.workout_name }}</h3>
+                <span class="workout-date">{{ workout.workout_date.strftime('%d.%m.%Y %H:%M') }}</span>
+            </div>
+            <div class="workout-info">
+                {% if workout.duration_minutes %}
+                <span class="info-badge">⏱️ {{ workout.duration_minutes }} хв</span>
+                {% endif %}
+                <span class="info-badge">📝 {{ workout.exercise_logs|length }} вправ</span>
+                <span class="info-badge">💪 {{ workout.exercise_logs|sum(attribute='set_number') }} підходів</span>
+            </div>
+            {% if workout.notes %}
+            <p class="workout-notes">{{ workout.notes }}</p>
+            {% endif %}
+            <a href="{{ url_for('view_workout', workout_id=workout.id) }}" class="btn btn-secondary">Деталі</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🏋️</div>
+        <h2>Тренувань поки що немає</h2>
+        <p>Почніть тренуватись та записуйте свій прогрес</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

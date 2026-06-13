@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Профіль - TrainBot{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>Профіль користувача</h1>
+        <a href="{{ url_for('edit_profile') }}" class="btn btn-primary">Редагувати профіль</a>
+    </div>
+
+    <div class="profile-card">
+        <div class="profile-section">
+            <h2>Основна інформація</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Ім'я:</span>
+                    <span class="info-value">{{ user.username or 'Не вказано' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">ID:</span>
+                    <span class="info-value">{{ user.telegram_id }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Вік:</span>
+                    <span class="info-value">{{ user.age or 'Не вказано' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Стать:</span>
+                    <span class="info-value">
+                        {% if user.gender == 'male' %}Чоловіча
+                        {% elif user.gender == 'female' %}Жіноча
+                        {% else %}Не вказано{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h2>Фізичні параметри</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Зріст:</span>
+                    <span class="info-value">{{ user.height|round(1) if user.height else 'Не вказано' }} {% if user.height %}см{% endif %}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Вага:</span>
+                    <span class="info-value">{{ user.weight|round(1) if user.weight else 'Не вказано' }} {% if user.weight %}кг{% endif %}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">BMI:</span>
+                    <span class="info-value">
+                        {% if user.height and user.weight %}
+                            {{ (user.weight / ((user.height / 100) ** 2))|round(1) }}
+                        {% else %}
+                            Не вказано
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h2>Тренування</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Досвід:</span>
+                    <span class="info-value">
+                        {% if user.experience == 'beginner' %}Початківець
+                        {% elif user.experience == 'intermediate' %}Середній
+                        {% elif user.experience == 'advanced' %}Досвідчений
+                        {% else %}Не вказано{% endif %}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Тренувань/тиждень:</span>
+                    <span class="info-value">{{ user.workouts_per_week or 'Не вказано' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Мета:</span>
+                    <span class="info-value">
+                        {% if user.current_goal == 'strength' %}Сила
+                        {% elif user.current_goal == 'hypertrophy' %}М'язова маса
+                        {% elif user.current_goal == 'endurance' %}Витривалість
+                        {% elif user.current_goal == 'weight_loss' %}Схуднення
+                        {% elif user.current_goal == 'general_fitness' %}Загальна фітнес
+                        {% else %}Не вказано{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-section">
+            <h2>Дати</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">Дата реєстрації:</span>
+                    <span class="info-value">{{ user.created_at.strftime('%d.%m.%Y') }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Останнє оновлення:</span>
+                    <span class="info-value">{{ user.updated_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

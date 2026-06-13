@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}{{ workout.workout_name }} - TrainBot{% endblock %}
+
+{% block content %}
+<div class="workout-detail">
+    <div class="page-header">
+        <div>
+            <h1>{{ workout.workout_name }}</h1>
+            <span class="workout-date">{{ workout.workout_date.strftime('%d.%m.%Y %H:%M') }}</span>
+        </div>
+        <a href="{{ url_for('workouts') }}" class="btn btn-secondary">Назад</a>
+    </div>
+
+    <div class="workout-info-card">
+        <div class="info-row">
+            {% if workout.duration_minutes %}
+            <div class="info-item">
+                <span class="info-label">Тривалість:</span>
+                <span class="info-value">{{ workout.duration_minutes }} хв</span>
+            </div>
+            {% endif %}
+            <div class="info-item">
+                <span class="info-label">Вправ:</span>
+                <span class="info-value">{{ workout.exercise_logs|length }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Всього підходів:</span>
+                <span class="info-value">{{ workout.exercise_logs|length }}</span>
+            </div>
+        </div>
+        {% if workout.notes %}
+        <div class="workout-notes">
+            <strong>Нотатки:</strong>
+            <p>{{ workout.notes }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="exercise-logs">
+        <h2>Вправи</h2>
+        {% if workout.exercise_logs %}
+        <div class="exercises-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Вправа</th>
+                        <th>Підхід</th>
+                        <th>Повторення</th>
+                        <th>Вага (кг)</th>
+                        <th>RIR</th>
+                        <th>Нотатки</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in workout.exercise_logs %}
+                    <tr>
+                        <td>{{ log.exercise_name }}</td>
+                        <td>{{ log.set_number }}</td>
+                        <td>{{ log.reps }}</td>
+                        <td>{{ log.weight }}</td>
+                        <td>{{ log.rir if log.rir else '-' }}</td>
+                        <td>{{ log.notes if log.notes else '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">Вправ не записано</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

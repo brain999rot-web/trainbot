@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Харчування - TrainBot{% endblock %}
+
+{% block content %}
+<div class="nutrition-container">
+    <h1>Харчування</h1>
+
+    {% if nutrition_profile %}
+    <div class="nutrition-profile">
+        <h2>Профіль харчування</h2>
+        <div class="nutrition-grid">
+            <div class="nutrition-stat">
+                <span class="stat-label">BMR (Базальний метаболізм):</span>
+                <span class="stat-value">{{ nutrition_profile.bmr|round(0)|int if nutrition_profile.bmr else '-' }} ккал</span>
+            </div>
+            <div class="nutrition-stat">
+                <span class="stat-label">TDEE (Денна норма):</span>
+                <span class="stat-value">{{ nutrition_profile.tdee|round(0)|int if nutrition_profile.tdee else '-' }} ккал</span>
+            </div>
+            <div class="nutrition-stat">
+                <span class="stat-label">Мета:</span>
+                <span class="stat-value">
+                    {% if nutrition_profile.goal == 'bulk' %}Набір маси
+                    {% elif nutrition_profile.goal == 'cut' %}Схуднення
+                    {% elif nutrition_profile.goal == 'maintain' %}Підтримка
+                    {% else %}-{% endif %}
+                </span>
+            </div>
+        </div>
+
+        <h3>Цільові макронутрієнти</h3>
+        <div class="macros-grid">
+            <div class="macro-card">
+                <div class="macro-icon">🔥</div>
+                <div class="macro-value">{{ nutrition_profile.target_calories|round(0)|int if nutrition_profile.target_calories else '-' }}</div>
+                <div class="macro-label">Калорії</div>
+            </div>
+            <div class="macro-card">
+                <div class="macro-icon">🥩</div>
+                <div class="macro-value">{{ nutrition_profile.target_protein|round(0)|int if nutrition_profile.target_protein else '-' }}</div>
+                <div class="macro-label">Білки (г)</div>
+            </div>
+            <div class="macro-card">
+                <div class="macro-icon">🍞</div>
+                <div class="macro-value">{{ nutrition_profile.target_carbs|round(0)|int if nutrition_profile.target_carbs else '-' }}</div>
+                <div class="macro-label">Вуглеводи (г)</div>
+            </div>
+            <div class="macro-card">
+                <div class="macro-icon">🥑</div>
+                <div class="macro-value">{{ nutrition_profile.target_fats|round(0)|int if nutrition_profile.target_fats else '-' }}</div>
+                <div class="macro-label">Жири (г)</div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="info-box">
+        <p>Профіль харчування ще не створено. Заповніть дані у профілі для розрахунку калорій та макронутрієнтів.</p>
+        <a href="{{ url_for('profile') }}" class="btn btn-primary">Перейти до профілю</a>
+    </div>
+    {% endif %}
+
+    <div class="nutrition-logs">
+        <h2>Історія харчування</h2>
+        {% if logs %}
+        <div class="logs-timeline">
+            {% for log in logs %}
+            <div class="log-card">
+                <div class="log-date">{{ log.log_date.strftime('%d.%m.%Y') }}</div>
+                <div class="log-macros">
+                    <span class="macro-badge">🔥 {{ log.calories|round(0)|int }} ккал</span>
+                    <span class="macro-badge">🥩 {{ log.protein|round(0)|int }} г білка</span>
+                    {% if log.carbs %}
+                    <span class="macro-badge">🍞 {{ log.carbs|round(0)|int }} г вуглеводів</span>
+                    {% endif %}
+                    {% if log.fats %}
+                    <span class="macro-badge">🥑 {{ log.fats|round(0)|int }} г жирів</span>
+                    {% endif %}
+                </div>
+                {% if log.notes %}
+                <p class="log-notes">{{ log.notes }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🍎</div>
+            <p>Записів харчування поки що немає</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

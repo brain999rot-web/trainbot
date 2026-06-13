@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Програми тренувань - TrainBot{% endblock %}
+
+{% block content %}
+<div class="programs-container">
+    <div class="page-header">
+        <h1>Програми тренувань</h1>
+        <a href="{{ url_for('create_program') }}" class="btn btn-primary">Створити програму</a>
+    </div>
+
+    {% if programs %}
+    <div class="programs-grid">
+        {% for program in programs %}
+        <div class="program-card {% if program.is_active %}active{% endif %}">
+            <div class="program-header">
+                <h3>{{ program.goal }}</h3>
+                {% if program.is_active %}
+                <span class="badge badge-success">Активна</span>
+                {% endif %}
+            </div>
+            <div class="program-info">
+                <p><strong>Тип сплиту:</strong> {{ program.split_type }}</p>
+                <p><strong>Тренувань/тиждень:</strong> {{ program.workouts_per_week }}</p>
+                <p><strong>Тижнів завершено:</strong> {{ program.weeks_completed }}</p>
+                <p><strong>Створено:</strong> {{ program.created_at.strftime('%d.%m.%Y') }}</p>
+            </div>
+            <a href="{{ url_for('view_program', program_id=program.id) }}" class="btn btn-secondary">Переглянути</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h2>Програм поки що немає</h2>
+        <p>Створіть свою першу програму тренувань</p>
+        <a href="{{ url_for('create_program') }}" class="btn btn-primary">Створити програму</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

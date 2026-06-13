@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Аналітика - TrainBot{% endblock %}
+
+{% block content %}
+<div class="analytics-container">
+    <h1>Аналітика та статистика</h1>
+
+    <div class="stats-overview">
+        <h2>Загальна статистика</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🏋️</div>
+                <div class="stat-value">{{ total_workouts }}</div>
+                <div class="stat-label">Всього тренувань</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-value">{{ workouts_last_month }}</div>
+                <div class="stat-label">За останній місяць</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="records-section">
+        <h2>Персональні рекорди 🏆</h2>
+        {% if records %}
+        <div class="records-list">
+            {% for record in records %}
+            <div class="record-card">
+                <div class="record-header">
+                    <h3>{{ record.exercise_name }}</h3>
+                    <span class="record-date">{{ record.date_achieved.strftime('%d.%m.%Y') }}</span>
+                </div>
+                <div class="record-value">
+                    <strong>{{ record.weight }} кг</strong> × {{ record.reps }} повторень
+                </div>
+                {% if record.notes %}
+                <p class="record-notes">{{ record.notes }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🏆</div>
+            <p>Рекордів поки що немає. Продовжуйте тренуватись!</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="progress-charts">
+        <h2>Графіки прогресу</h2>
+        <p class="text-muted">Графіки будуть додані в наступних оновленнях</p>
+    </div>
+</div>
+{% endblock %}

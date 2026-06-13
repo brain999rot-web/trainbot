@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}TrainBot - Ваш персональний тренер{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Ваш персональний фітнес-тренер</h1>
+    <p class="hero-subtitle">Створюйте програми тренувань, відстежуйте прогрес, аналізуйте результати</p>
+    <div class="hero-buttons">
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">Почати тренування</a>
+        <a href="{{ url_for('login') }}" class="btn btn-secondary btn-large">Увійти</a>
+    </div>
+</div>
+
+<div class="features">
+    <h2>Можливості</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📋</div>
+            <h3>Програми тренувань</h3>
+            <p>Створюйте персоналізовані програми на основі вашої мети та досвіду</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">💪</div>
+            <h3>Логування вправ</h3>
+            <p>Записуйте кожне тренування, підходи, повторення та вагу</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Аналітика прогресу</h3>
+            <p>Відстежуйте свій прогрес з детальною статистикою та графіками</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🍎</div>
+            <h3>Харчування</h3>
+            <p>Розраховуйте калорії, макронутрієнти та контролюйте раціон</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🏆</div>
+            <h3>Персональні рекорди</h3>
+            <p>Фіксуйте та святкуйте свої досягнення</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">⭐</div>
+            <h3>База вправ</h3>
+            <p>Доступ до великої бази вправ з описами та техніками</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
