@@ -24,14 +24,18 @@ async def create_program_start(message: Message, state: FSMContext):
 
         if not user or not user.workouts_per_week:
             await message.answer(
-                "❌ Спочатку заповни профіль!\nВикористай команду /start"
+                "❌ <b>Спочатку заповни профіль!</b>\n\n"
+                "Використай команду /start",
+                parse_mode="HTML"
             )
             return
 
         await message.answer(
-            "🎯 Обери свою тренувальну мету:\n\n"
-            "Це визначить структуру твоєї програми, обсяг тренувань та акценти.",
-            reply_markup=get_goals_keyboard(page=0)
+            "🎯 <b>Обери свою тренувальну мету:</b>\n\n"
+            "Це визначить структуру твоєї програми, обсяг тренувань та акценти.\n\n"
+            "💡 <i>Прогортай список кнопками ⬅️ ➡️</i>",
+            reply_markup=get_goals_keyboard(page=0),
+            parse_mode="HTML"
         )
         await state.set_state(ProgramCreationStates.choose_goal)
 
@@ -83,10 +87,10 @@ async def process_goal_selection(callback: CallbackQuery, state: FSMContext):
         program_description = _format_program_description(program_data)
 
         await callback.message.edit_text(
-            f"📋 **Твоя програма:**\n\n{program_description}\n\n"
-            "Підтверджуєш програму?",
+            f"📋 <b>Твоя програма:</b>\n\n{program_description}\n\n"
+            "❓ <b>Підтверджуєш програму?</b>",
             reply_markup=get_confirm_program_keyboard(),
-            parse_mode="Markdown"
+            parse_mode="HTML"
         )
         await state.set_state(ProgramCreationStates.confirm_program)
 
@@ -113,20 +117,20 @@ async def confirm_program(callback: CallbackQuery, state: FSMContext):
             )
 
             await callback.message.edit_text(
-                "✅ **Програма створена!**\n\n"
+                "✅ <b>Програма створена!</b>\n\n"
                 "Тепер ти можеш:\n"
-                "• Переглянути програму: 📋 Моя програма\n"
-                "• Почати тренування: ➕ Записати тренування\n\n"
+                "• Переглянути програму: <b>📋 Моя програма</b>\n"
+                "• Почати тренування: <b>➕ Записати тренування</b>\n\n"
                 "Успішних тренувань! 💪",
-                parse_mode="Markdown"
+                parse_mode="HTML"
             )
             await state.clear()
         except Exception as e:
             logger.error(f"Помилка при створенні програми: {e}")
             await callback.message.edit_text(
-                "❌ **Помилка при збереженні програми**\n\n"
-                "Спробуй ще раз: 🏋 Створити програму",
-                parse_mode="Markdown"
+                "❌ <b>Помилка при збереженні програми</b>\n\n"
+                "Спробуй ще раз: <b>🏋 Створити програму</b>",
+                parse_mode="HTML"
             )
             await state.clear()
 
@@ -150,13 +154,14 @@ async def view_program(message: Message):
 
         if not program:
             await message.answer(
-                "❌ У тебе ще немає активної програми.\n\n"
-                "Створи програму: 🏋 Створити програму"
+                "❌ <b>У тебе ще немає активної програми.</b>\n\n"
+                "Створи програму: <b>🏋 Створити програму</b>",
+                parse_mode="HTML"
             )
             return
 
         program_text = _format_full_program(program.program_data)
-        await message.answer(program_text)
+        await message.answer(program_text, parse_mode="HTML")
 
 
 @router.message(F.text == "🔄 Пересчитати програму")
@@ -202,34 +207,36 @@ async def recalculate_program(message: Message):
 
 def _format_program_description(program_data: dict) -> str:
     """Форматує короткий опис програми"""
-    text = f"**Мета:** {program_data['goal']}\n"
-    text += f"**Сплит:** {program_data['split_type']}\n"
-    text += f"**Тренувань на тиждень:** {program_data['workouts_per_week']}\n\n"
+    text = f"🎯 <b>Мета:</b> {program_data['goal']}\n"
+    text += f"📊 <b>Сплит:</b> {program_data['split_type']}\n"
+    text += f"📅 <b>Тренувань на тиждень:</b> {program_data['workouts_per_week']}\n\n"
 
-    text += "**Тренування:**\n"
+    text += "💪 <b>Тренування:</b>\n"
     for workout in program_data['workouts']:
-        text += f"• {workout['name']} ({len(workout['exercises'])} вправ)\n"
+        text += f"  • {workout['name']} ({len(workout['exercises'])} вправ)\n"
 
     return text
 
 
 def _format_full_program(program_data: dict) -> str:
     """Форматує повний опис програми"""
-    text = f"📋 **Твоя програма тренувань**\n\n"
-    text += f"🎯 Мета: {program_data['goal']}\n"
-    text += f"📊 Сплит: {program_data['split_type']}\n"
-    text += f"📅 Тренувань: {program_data['workouts_per_week']}/тиждень\n\n"
+    text = f"📋 <b>Твоя програма тренувань</b>\n\n"
+    text += f"🎯 <b>Мета:</b> {program_data['goal']}\n"
+    text += f"📊 <b>Сплит:</b> {program_data['split_type']}\n"
+    text += f"📅 <b>Тренувань:</b> {program_data['workouts_per_week']}/тиждень\n\n"
+    text += "━━━━━━━━━━━━━━━━━━━━\n\n"
 
     for i, workout in enumerate(program_data['workouts'], 1):
-        text += f"**{i}. {workout['name']}**\n"
+        text += f"<b>{i}. {workout['name']}</b>\n\n"
         for j, exercise in enumerate(workout['exercises'], 1):
-            text += f"  {j}. {exercise['name']}\n"
-            text += f"     • {exercise['sets']} x {exercise['reps']} повторень\n"
+            text += f"  {j}. <b>{exercise['name']}</b>\n"
+            text += f"     • {exercise['sets']} підходів × {exercise['reps']} повторень\n"
             text += f"     • RIR: {exercise['rir']}\n"
             if exercise.get('notes'):
-                text += f"     • {exercise['notes']}\n"
-        text += "\n"
+                text += f"     • <i>{exercise['notes']}</i>\n"
+            text += "\n"
+        text += "━━━━━━━━━━━━━━━━━━━━\n\n"
 
-    text += f"ℹ️ {program_data['notes']}\n"
+    text += f"ℹ️ <i>{program_data['notes']}</i>\n"
 
     return text

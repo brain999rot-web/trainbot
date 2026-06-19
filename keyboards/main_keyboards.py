@@ -28,7 +28,7 @@ def get_main_menu_keyboard() -> ReplyKeyboardMarkup:
             ],
             [
                 KeyboardButton(text="📚 База вправ"),
-                KeyboardButton(text="⭐ Избранное")
+                KeyboardButton(text="⭐ Обране")
             ],
             [
                 KeyboardButton(text="⏱ Таймер відпочинку"),

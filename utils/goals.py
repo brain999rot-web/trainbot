@@ -479,6 +479,140 @@ TRAINING_GOALS: List[Goal] = [
         recommended_frequency=4,
         recommended_split="Upper Lower"
     ),
+    Goal(
+        name="Атлетична фігура",
+        description="Спортивне тіло з акцентом на функціональність",
+        muscle_priorities={
+            "спина": MuscleVolume(14, 18, "high"),
+            "ноги": MuscleVolume(14, 18, "high"),
+            "грудь": MuscleVolume(12, 16, "medium"),
+            "плечі": MuscleVolume(12, 16, "medium"),
+            "руки": MuscleVolume(10, 14, "medium"),
+            "прес": MuscleVolume(8, 12, "medium"),
+        },
+        recommended_frequency=4,
+        recommended_split="Full Body"
+    ),
+    Goal(
+        name="Кроссфіт база",
+        description="Розвиток сили та витривалості для функціонального тренінгу",
+        muscle_priorities={
+            "ноги": MuscleVolume(14, 18, "high"),
+            "спина": MuscleVolume(14, 18, "high"),
+            "грудь": MuscleVolume(12, 16, "medium"),
+            "плечі": MuscleVolume(12, 16, "medium"),
+            "руки": MuscleVolume(10, 14, "medium"),
+            "прес": MuscleVolume(10, 14, "medium"),
+        },
+        recommended_frequency=4,
+        recommended_split="Full Body"
+    ),
+    Goal(
+        name="Сильні ноги",
+        description="Максимальна маса та сила ніг",
+        muscle_priorities={
+            "ноги": MuscleVolume(20, 26, "high"),
+            "спина": MuscleVolume(12, 16, "medium"),
+            "грудь": MuscleVolume(10, 14, "medium"),
+            "плечі": MuscleVolume(10, 14, "medium"),
+            "руки": MuscleVolume(8, 12, "low"),
+        },
+        recommended_frequency=5,
+        recommended_split="Upper Lower Legs"
+    ),
+    Goal(
+        name="Потужні квадрицепси",
+        description="Спеціалізація на передню поверхню стегна",
+        muscle_priorities={
+            "ноги": MuscleVolume(22, 28, "high"),
+            "спина": MuscleVolume(10, 14, "medium"),
+            "грудь": MuscleVolume(10, 14, "medium"),
+            "плечі": MuscleVolume(10, 14, "medium"),
+            "руки": MuscleVolume(8, 12, "low"),
+        },
+        recommended_frequency=5,
+        recommended_split="Upper Lower Legs"
+    ),
+    Goal(
+        name="Сідниці та ноги",
+        description="Акцент на розвиток ніг та сідниць",
+        muscle_priorities={
+            "ноги": MuscleVolume(20, 26, "high"),
+            "спина": MuscleVolume(12, 16, "medium"),
+            "грудь": MuscleVolume(10, 14, "medium"),
+            "плечі": MuscleVolume(10, 14, "medium"),
+            "руки": MuscleVolume(8, 12, "low"),
+        },
+        recommended_frequency=4,
+        recommended_split="Upper Lower"
+    ),
+    Goal(
+        name="Міцний прес",
+        description="Розвиток м'язів кору та преса",
+        muscle_priorities={
+            "прес": MuscleVolume(14, 18, "high"),
+            "спина": MuscleVolume(12, 16, "medium"),
+            "грудь": MuscleVolume(12, 16, "medium"),
+            "плечі": MuscleVolume(10, 14, "medium"),
+            "руки": MuscleVolume(10, 14, "medium"),
+            "ноги": MuscleVolume(12, 16, "medium"),
+        },
+        recommended_frequency=4,
+        recommended_split="Upper Lower"
+    ),
+    Goal(
+        name="Початківець",
+        description="Вивчення техніки та адаптація організму",
+        muscle_priorities={
+            "грудь": MuscleVolume(10, 14, "medium"),
+            "спина": MuscleVolume(10, 14, "medium"),
+            "плечі": MuscleVolume(8, 12, "medium"),
+            "руки": MuscleVolume(8, 12, "medium"),
+            "ноги": MuscleVolume(10, 14, "medium"),
+        },
+        recommended_frequency=3,
+        recommended_split="Full Body"
+    ),
+    Goal(
+        name="Повернення після перерви",
+        description="Відновлення форми після тривалої паузи",
+        muscle_priorities={
+            "грудь": MuscleVolume(10, 14, "medium"),
+            "спина": MuscleVolume(10, 14, "medium"),
+            "плечі": MuscleVolume(10, 14, "medium"),
+            "руки": MuscleVolume(8, 12, "medium"),
+            "ноги": MuscleVolume(10, 14, "medium"),
+        },
+        recommended_frequency=3,
+        recommended_split="Full Body"
+    ),
+    Goal(
+        name="Витривалість та тонус",
+        description="Підтримка форми з фокусом на витривалість",
+        muscle_priorities={
+            "грудь": MuscleVolume(8, 12, "medium"),
+            "спина": MuscleVolume(10, 14, "medium"),
+            "плечі": MuscleVolume(8, 12, "medium"),
+            "руки": MuscleVolume(8, 12, "medium"),
+            "ноги": MuscleVolume(10, 14, "medium"),
+            "прес": MuscleVolume(8, 12, "medium"),
+        },
+        recommended_frequency=3,
+        recommended_split="Full Body"
+    ),
+    Goal(
+        name="Підтримка форми",
+        description="Збереження результатів при обмеженому часі",
+        muscle_priorities={
+            "грудь": MuscleVolume(8, 12, "medium"),
+            "спина": MuscleVolume(8, 12, "medium"),
+            "плечі": MuscleVolume(8, 12, "medium"),
+            "руки": MuscleVolume(6, 10, "low"),
+            "ноги": MuscleVolume(8, 12, "medium"),
+        },
+        recommended_frequency=3,
+        recommended_split="Full Body"
+    ),
 ]
 
 

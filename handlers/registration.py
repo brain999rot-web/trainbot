@@ -36,19 +36,21 @@ async def cmd_start(message: Message, state: FSMContext):
         # Перевіряємо чи заповнений профіль
         if not user.age or not user.workouts_per_week:
             await message.answer(
-                "👋 Вітаю! Я твій персональний тренер.\n\n"
+                "👋 <b>Вітаю!</b> Я твій персональний тренер.\n\n"
                 "Щоб створити ідеальну програму тренувань, мені потрібно дізнатися трохи про тебе.\n\n"
-                "📝 Давай заповнимо анкету!\n\n"
-                "Скільки тобі років?\n\n"
-                "💡 Введіть /cancel щоб скасувати",
-                reply_markup=None
+                "📝 <b>Давай заповнимо анкету!</b>\n\n"
+                "❓ <i>Скільки тобі років?</i>\n\n"
+                "💡 Введи /cancel щоб скасувати",
+                reply_markup=None,
+                parse_mode="HTML"
             )
             await state.set_state(RegistrationStates.age)
         else:
             await message.answer(
-                f"З поверненням, {message.from_user.first_name}! 💪\n\n"
+                f"👋 <b>З поверненням, {message.from_user.first_name}!</b> 💪\n\n"
                 "Обери дію з меню:",
-                reply_markup=get_main_menu_keyboard()
+                reply_markup=get_main_menu_keyboard(),
+                parse_mode="HTML"
             )
 
 
@@ -59,12 +61,14 @@ async def process_age(message: Message, state: FSMContext):
         age = InputValidator.validate_age(message.text)
         await state.update_data(age=age)
         await message.answer(
-            "📏 Який у тебе зріст? (у см, наприклад: 175)\n\n"
-            "💡 Введіть /cancel щоб скасувати"
+            "📏 <b>Який у тебе зріст?</b>\n\n"
+            "💡 <i>Введи у см, наприклад: 175</i>\n\n"
+            "Введи /cancel щоб скасувати",
+            parse_mode="HTML"
         )
         await state.set_state(RegistrationStates.height)
     except ValidationError as e:
-        await message.answer(str(e))
+        await message.answer(f"❌ {str(e)}")
 
 
 @router.message(RegistrationStates.height)
@@ -74,12 +78,14 @@ async def process_height(message: Message, state: FSMContext):
         height = InputValidator.validate_height(message.text)
         await state.update_data(height=height)
         await message.answer(
-            "⚖️ Яка твоя вага? (у кг, наприклад: 75)\n\n"
-            "💡 Введіть /cancel щоб скасувати"
+            "⚖️ <b>Яка твоя вага?</b>\n\n"
+            "💡 <i>Введи у кг, наприклад: 75</i>\n\n"
+            "Введи /cancel щоб скасувати",
+            parse_mode="HTML"
         )
         await state.set_state(RegistrationStates.weight)
     except ValidationError as e:
-        await message.answer(str(e))
+        await message.answer(f"❌ {str(e)}")
 
 
 @router.message(RegistrationStates.weight)
