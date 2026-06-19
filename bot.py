@@ -48,13 +48,14 @@ async def main():
     dp.include_router(registration.router)
     dp.include_router(program_handlers.router)
     dp.include_router(workout_handlers.router)
-    dp.include_router(progress_handlers.router)
     dp.include_router(analytics_handlers.router)
     dp.include_router(timer_handlers.router)
     dp.include_router(exercise_database_handlers.router)
     dp.include_router(strength_calculator_handlers.router)
     dp.include_router(favorites_records_handlers.router)
     dp.include_router(nutrition_handlers.router)
+    # progress_handlers має бути ОСТАННІМ, бо там є загальний F.text handler
+    dp.include_router(progress_handlers.router)
 
     logger.info("Роутери зареєстровані")
 
