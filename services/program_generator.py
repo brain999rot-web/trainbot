@@ -17,6 +17,9 @@ class ProgramGenerator:
         split_type = self._determine_split()
         workouts = self._create_workouts(split_type)
 
+        # Обмежуємо кількість тренувань до workouts_per_week
+        workouts = workouts[:self.workouts_per_week]
+
         return {
             "goal": self.goal.name,
             "split_type": split_type,

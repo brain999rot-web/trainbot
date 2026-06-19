@@ -36,6 +36,9 @@ class ProfessionalProgramGenerator:
         split_type = self._determine_optimal_split()
         workouts = self._create_optimal_workouts(split_type)
 
+        # Обмежуємо кількість тренувань до workouts_per_week
+        workouts = workouts[:self.workouts_per_week]
+
         return {
             "goal": self.goal.name,
             "split_type": split_type,
