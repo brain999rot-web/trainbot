@@ -11,7 +11,7 @@ router = Router()
 logger = StructuredLogger(__name__)
 
 
-@router.message(F.text == "⭐ Избранное")
+@router.message(F.text == "⭐ Обране")
 @safe_handler
 async def show_favorites(message: Message):
     """Показує улюблені вправи"""

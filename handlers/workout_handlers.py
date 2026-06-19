@@ -96,7 +96,7 @@ async def choose_workout(callback: CallbackQuery, state: FSMContext):
             await callback.message.edit_text(
                 f"✅ Тренування: **{selected_workout['name']}**\n\n"
                 "Обери вправу для логування:",
-                reply_markup=get_exercise_selection_keyboard(selected_workout["exercises"]),
+                reply_markup=get_exercise_selection_keyboard(selected_workout["exercises"], parse_mode="Markdown"),
                 parse_mode="Markdown"
             )
             await state.set_state(WorkoutLoggingStates.choose_exercise)
@@ -169,7 +169,7 @@ async def choose_exercise(callback: CallbackQuery, state: FSMContext):
 
     await callback.message.edit_text(
         f"🏋️ **{exercise['name']}**\n\n"
-        f"📋 План: {exercise['sets']} x {exercise['reps']} (RIR {exercise['rir']})\n"
+        f"📋 План: {exercise['sets']} x {exercise['reps']} (RIR {exercise['rir']}, parse_mode="Markdown")\n"
         f"{last_perf_text}"
         f"{suggested_text}\n\n"
         f"**Підхід 1/{exercise['sets']}**\n\n"
@@ -237,7 +237,7 @@ async def log_set(message: Message, state: FSMContext):
                 f"📝 **Записані підходи:**\n{logged_text}\n\n"
                 f"**Підхід {next_set}/{exercise['sets']}**\n\n"
                 "Введи результат наступного підходу:"
-            )
+            , parse_mode="Markdown")
         else:
             # Всі підходи виконано - аналіз прогресії з новим сервісом
             logged_text = "\n".join([f"Підхід {s['set']}: {s['weight']}кг x {s['reps']} повт." for s in logged_sets])
@@ -284,7 +284,7 @@ async def log_set(message: Message, state: FSMContext):
                 f"✅ Вправа завершена!\n\n"
                 f"📝 **{exercise['name']}**\n{logged_text}\n\n"
                 f"{progression_message}"
-            )
+            , parse_mode="Markdown")
 
             # Якщо новий рекорд - повідомляємо
             if record_info['is_new_record']:

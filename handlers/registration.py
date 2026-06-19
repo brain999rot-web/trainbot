@@ -253,7 +253,7 @@ async def cmd_menu(message: Message):
     """Показати головне меню"""
     await message.answer(
         "📱 **Головне меню**\n\nОбери дію:",
-        reply_markup=get_main_menu_keyboard(),
+        reply_markup=get_main_menu_keyboard(, parse_mode="Markdown"),
         parse_mode="Markdown"
     )
 
@@ -325,7 +325,7 @@ async def show_reminders(callback: CallbackQuery):
                 "У тебе немає активних нагадувань.\n"
                 "Хочеш додати?",
                 reply_markup=keyboard
-            )
+            , parse_mode="Markdown")
         else:
             text = "🔔 **Твої нагадування:**\n\n"
             buttons = []

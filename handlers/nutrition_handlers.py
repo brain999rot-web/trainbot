@@ -233,7 +233,7 @@ async def process_calories(message: Message, state: FSMContext):
 
         await message.answer(
             f"✅ Калорії: **{calories:.0f} ккал**\n\n"
-            f"Тепер введи кількість білка (в грамах):\n"
+            f"Тепер введи кількість білка (в грамах, parse_mode="Markdown"):\n"
             f"Наприклад: 150\n\n"
             f"💡 /cancel щоб скасувати",
             parse_mode="Markdown"
