@@ -342,6 +342,23 @@ def analytics():
 
 
 if __name__ == '__main__':
-    # Railway використовує змінну PORT
+    # Запускаємо бота в окремому потоці
+    import threading
+    import asyncio
+    from bot import main as bot_main
+
+    def run_bot():
+        """Запуск бота в окремому потоці"""
+        try:
+            asyncio.run(bot_main())
+        except Exception as e:
+            logger.error(f"Помилка запуску бота: {e}")
+
+    # Запускаємо бота у фоновому режимі
+    bot_thread = threading.Thread(target=run_bot, daemon=True)
+    bot_thread.start()
+    logger.info("Бот запущено у фоновому потоці")
+
+    # Запускаємо Flask веб-сервер
     port = int(os.getenv('PORT', os.getenv('FLASK_PORT', 5000)))
     app.run(host='0.0.0.0', port=port, debug=os.getenv('FLASK_DEBUG', 'False') == 'True')

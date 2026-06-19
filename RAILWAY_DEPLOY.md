@@ -1,84 +1,56 @@
-# TrainBot - Deployment на Railway
+# Деплой на Railway
 
-## Швидкий деплой
+## Налаштування
 
-### 1. Створіть проєкт на Railway
+1. **Створи новий проект на Railway**
+   - Зайди на https://railway.app
+   - Натисни "New Project"
+   - Обери "Deploy from GitHub repo"
+   - Підключи репозиторій trainbot
 
-1. Зайдіть на [railway.app](https://railway.app)
-2. Натисніть "New Project" → "Deploy from GitHub repo"
-3. Оберіть репозиторій trainbot
+2. **Додай змінні середовища (Environment Variables)**
+   У розділі Variables додай:
+   ```
+   BOT_TOKEN=8844791403:AAGmhCvqKpSYprADcC1g0mOfJuB0kjzhz9s
+   DATABASE_URL=sqlite+aiosqlite:///training_bot.db
+   FLASK_SECRET_KEY=trainbot-secret-key-2026-change-in-production
+   ```
 
-### 2. Налаштуйте змінні середовища
+3. **Railway автоматично:**
+   - Виявить `Procfile` і запустить `web: python web_app.py`
+   - Встановить залежності з `requirements.txt`
+   - Використає Python версію з `runtime.txt`
 
-Додайте в Railway Dashboard → Variables:
+4. **Деплой**
+   - Кожен push в GitHub автоматично задеплоїться
+   - Або натисни "Deploy" вручну в Railway
 
-```env
-BOT_TOKEN=your_bot_token_from_botfather
-DATABASE_URL=sqlite:///training_bot.db
-FLASK_SECRET_KEY=your-random-secret-key-here
-PORT=5000
-```
+## Перевірка роботи
 
-### 3. Деплой
+1. **Веб-інтерфейс:**
+   - Відкрий URL який дав Railway (наприклад: `https://trainbot.up.railway.app`)
+   - Повинна відкритись головна сторінка
 
-Railway автоматично задеплоїть додаток після push в GitHub.
+2. **Telegram бот:**
+   - Напиши `/start` боту в Telegram
+   - Бот повинен відповісти
 
-## Структура проєкту
+## Логи
 
-- **bot.py** - Telegram бот (aiogram)
-- **web_app.py** - Flask веб-інтерфейс
-- **requirements.txt** - Всі залежності (бот + веб)
-- **Procfile** - Команди запуску для Railway
-- **railway.json** - Конфігурація Railway
+Переглядай логи в Railway:
+- Клік на сервіс → вкладка "Logs"
+- Повинен побачити: "Бот запущено у фоновому потоці"
 
-## Запуск локально
+## Важливо
 
-### Бот:
-```bash
-python bot.py
-```
-
-### Веб-додаток:
-```bash
-python web_app.py
-```
-
-Веб-інтерфейс: http://localhost:5000
-
-## Railway - два сервіси
-
-Для запуску і бота, і веб-додатку одночасно на Railway:
-
-1. Створіть **два окремі сервіси** в одному проєкті
-2. Перший сервіс (Bot):
-   - Start Command: `python bot.py`
-   - Змінні: BOT_TOKEN, DATABASE_URL
-3. Другий сервіс (Web):
-   - Start Command: `python web_app.py`
-   - Змінні: FLASK_SECRET_KEY, PORT, DATABASE_URL
-
-Або використовуйте **Railway volumes** для спільної бази даних SQLite між сервісами.
-
-## База даних
-
-За замовчуванням використовується SQLite. Для production розгляньте PostgreSQL:
-
-```env
-DATABASE_URL=postgresql://user:password@host:5432/trainbot
-```
-
-Оновіть `database.py` та `sync_database.py` для PostgreSQL драйверів.
+- Бот працює в одному процесі з веб-сервером
+- Використовується polling для отримання повідомлень
+- База даних SQLite зберігається всередині контейнера
+- При рестарті дані НЕ втрачаються (Railway зберігає volumes)
 
 ## Troubleshooting
 
-### Flask не запускається
-- Перевірте що PORT встановлено в змінних Railway
-- Перевірте що Flask встановлено в requirements.txt
-
-### База даних не зберігається
-- Railway ephemeral filesystem - додайте Railway Volume
-- Або використовуйте PostgreSQL замість SQLite
-
-### Бот та веб не бачать одну БД
-- Використовуйте спільний Railway Volume
-- Або винесіть БД на окремий PostgreSQL сервіс
+Якщо бот не працює:
+1. Перевір логи в Railway
+2. Перевір що BOT_TOKEN правильний
+3. Перевір що немає інших інстансів бота (webhook або polling)
