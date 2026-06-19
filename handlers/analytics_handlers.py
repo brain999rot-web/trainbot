@@ -72,7 +72,7 @@ async def show_analytics(message: Message):
                 analytics_text += f"• {record['exercise']}\n"
                 analytics_text += f"  {record['weight']}кг x {record['reps']} ({date_str})\n"
 
-        await message.answer(analytics_text)
+        await message.answer(analytics_text, parse_mode="Markdown")
 
 
 @router.message(F.text == "💡 Рекомендації")
@@ -88,7 +88,8 @@ async def show_recommendations(message: Message):
             await message.answer(
                 "✅ **Все чудово!**\n\n"
                 "У тебе немає критичних рекомендацій.\n"
-                "Продовжуй тренуватися і прогресувати! 💪"
+                "Продовжуй тренуватися і прогресувати! 💪",
+                parse_mode="Markdown"
             )
             return
 
@@ -104,4 +105,4 @@ async def show_recommendations(message: Message):
             rec_text += f"**Що робити:**\n{rec['action']}\n\n"
             rec_text += "─" * 30 + "\n\n"
 
-        await message.answer(rec_text)
+        await message.answer(rec_text, parse_mode="Markdown")

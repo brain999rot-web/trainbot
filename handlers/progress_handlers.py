@@ -64,7 +64,7 @@ async def show_progress(message: Message):
             date_str = workout.workout_date.strftime("%d.%m.%Y")
             progress_text += f"• {workout.workout_name} - {date_str}\n"
 
-        await message.answer(progress_text)
+        await message.answer(progress_text, parse_mode="Markdown")
 
         # Пропонуємо показати детальний прогрес по вправі
         if unique_exercises:
@@ -73,7 +73,8 @@ async def show_progress(message: Message):
                 f"📊 **Детальний прогрес по вправі:**\n\n"
                 f"Щоб переглянути прогрес по конкретній вправі, "
                 f"відправ її назву.\n\n"
-                f"Доступні вправи:\n{exercises_list}"
+                f"Доступні вправи:\n{exercises_list}",
+                parse_mode="Markdown"
             )
 
 
@@ -152,4 +153,4 @@ async def show_exercise_progress(message: Message):
             else:
                 progress_text += "⚠️ Вага впала. Можливо потрібен відпочинок?"
 
-        await message.answer(progress_text)
+        await message.answer(progress_text, parse_mode="Markdown")
