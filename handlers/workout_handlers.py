@@ -169,7 +169,7 @@ async def choose_exercise(callback: CallbackQuery, state: FSMContext):
 
     await callback.message.edit_text(
         f"🏋️ **{exercise['name']}**\n\n"
-        f"📋 План: {exercise['sets']} x {exercise['reps']} (RIR {exercise['rir']}, parse_mode="Markdown")\n"
+        f"📋 План: {exercise['sets']} x {exercise['reps']} (RIR {exercise['rir']})\n"
         f"{last_perf_text}"
         f"{suggested_text}\n\n"
         f"**Підхід 1/{exercise['sets']}**\n\n"

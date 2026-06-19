@@ -18,10 +18,11 @@ async def start_1rm_calculator(message: Message, state: FSMContext):
     logger.log_user_action(message.from_user.id, "start_1rm_calculator")
 
     await message.answer(
-        "🏋️ **Калькулятор одноповторного максимуму (1RM, parse_mode="Markdown")**\n\n"
+        "🏋️ **Калькулятор одноповторного максимуму (1RM)**\n\n"
         "Введи назву вправи для розрахунку:\n"
         "Наприклад: Жим лежа, Присідання, Станова тяга\n\n"
-        "💡 Введіть /cancel щоб скасувати"
+        "💡 Введіть /cancel щоб скасувати",
+        parse_mode="Markdown"
     )
     await state.set_state(StrengthCalculatorStates.exercise_name)
 
@@ -40,7 +41,7 @@ async def process_exercise_name(message: Message, state: FSMContext):
 
     await message.answer(
         f"✅ Вправа: **{exercise_name}**\n\n"
-        "Який вагу ти підняв? (у кг, parse_mode="Markdown")\n"
+        "Який вагу ти підняв? (у кг)\n"
         "Наприклад: 100 або 75.5\n\n"
         "💡 Введіть /cancel щоб скасувати",
         parse_mode="Markdown"
@@ -195,10 +196,11 @@ async def show_rep_recommendations(callback: CallbackQuery):
 async def new_1rm_calculation(callback: CallbackQuery, state: FSMContext):
     """Починає новий розрахунок 1RM"""
     await callback.message.edit_text(
-        "🏋️ **Калькулятор одноповторного максимуму (1RM, parse_mode="Markdown")**\n\n"
+        "🏋️ **Калькулятор одноповторного максимуму (1RM)**\n\n"
         "Введи назву вправи для розрахунку:\n"
         "Наприклад: Жим лежа, Присідання, Станова тяга\n\n"
-        "💡 Введіть /cancel щоб скасувати"
+        "💡 Введіть /cancel щоб скасувати",
+        parse_mode="Markdown"
     )
     await state.set_state(StrengthCalculatorStates.exercise_name)
     await callback.answer()
