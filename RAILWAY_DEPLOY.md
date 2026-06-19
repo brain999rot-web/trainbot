@@ -16,41 +16,66 @@
    FLASK_SECRET_KEY=trainbot-secret-key-2026-change-in-production
    ```
 
-3. **Railway автоматично:**
+3. **Важливо! Отримай публічний URL**
+   - Після першого деплою Railway дасть URL (наприклад: `trainbot-production.up.railway.app`)
+   - Додай цей URL як змінну:
+   ```
+   WEBHOOK_URL=https://trainbot-production.up.railway.app
+   ```
+   - Railway автоматично перезапустить сервіс
+
+4. **Railway автоматично:**
    - Виявить `Procfile` і запустить `web: python web_app.py`
    - Встановить залежності з `requirements.txt`
    - Використає Python версію з `runtime.txt`
 
-4. **Деплой**
-   - Кожен push в GitHub автоматично задеплоїться
-   - Або натисни "Deploy" вручну в Railway
+## Як це працює
+
+- **Веб-сайт**: Flask сервер на `/`
+- **Telegram бот**: Webhook на `/webhook`
+- Бот працює через webhook (не polling)
+- Telegram надсилає повідомлення на `https://your-url.railway.app/webhook`
 
 ## Перевірка роботи
 
 1. **Веб-інтерфейс:**
-   - Відкрий URL який дав Railway (наприклад: `https://trainbot.up.railway.app`)
+   - Відкрий Railway URL
    - Повинна відкритись головна сторінка
 
 2. **Telegram бот:**
    - Напиши `/start` боту в Telegram
    - Бот повинен відповісти
 
+3. **Перевірка webhook:**
+   - В логах Railway повинно бути: "Встановлюємо webhook: https://..."
+   - "Бот готовий до роботи через webhook"
+
 ## Логи
 
 Переглядай логи в Railway:
 - Клік на сервіс → вкладка "Logs"
-- Повинен побачити: "Бот запущено у фоновому потоці"
+- Шукай: "Webhook встановлено" та "Бот готовий"
 
 ## Важливо
 
-- Бот працює в одному процесі з веб-сервером
-- Використовується polling для отримання повідомлень
-- База даних SQLite зберігається всередині контейнера
-- При рестарті дані НЕ втрачаються (Railway зберігає volumes)
+- Бот використовує **webhook** (не polling)
+- Потрібен **HTTPS** URL від Railway
+- WEBHOOK_URL встановлюється **після** першого деплою
+- База даних SQLite зберігається в volume Railway
 
 ## Troubleshooting
 
-Якщо бот не працює:
-1. Перевір логи в Railway
-2. Перевір що BOT_TOKEN правильний
-3. Перевір що немає інших інстансів бота (webhook або polling)
+### Бот не відповідає:
+1. Перевір логи Railway
+2. Перевір що `WEBHOOK_URL` встановлено правильно
+3. Перевір що `BOT_TOKEN` правильний
+4. Відкрий `https://api.telegram.org/bot<BOT_TOKEN>/getWebhookInfo` — перевір webhook
+
+### Помилка "WEBHOOK_URL не встановлено":
+1. Додай змінну `WEBHOOK_URL` з твоїм Railway URL
+2. Або Railway сам встановить `RAILWAY_STATIC_URL`
+
+### Сайт працює, бот ні:
+1. Перевір що webhook встановлено в логах
+2. Видали старий webhook: `https://api.telegram.org/bot<BOT_TOKEN>/deleteWebhook`
+3. Перезапусти сервіс в Railway

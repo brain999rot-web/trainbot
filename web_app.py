@@ -14,6 +14,7 @@ from models.favorite_exercise import FavoriteExercise
 from sync_database import SessionLocal, init_sync_db
 import logging
 from sqlalchemy import desc
+import asyncio
 
 load_dotenv()
 
@@ -27,6 +28,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 db_session = SessionLocal
+
+# Імпортуємо webhook функції
+from bot_webhook import setup_bot, process_update, set_webhook
 
 
 def login_required(f):
@@ -48,6 +52,21 @@ def get_current_user():
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
+
+
+@app.route('/webhook', methods=['POST'])
+@csrf.exempt
+def telegram_webhook():
+    """Endpoint для обробки повідомлень від Telegram"""
+    if request.method == "POST":
+        try:
+            update = request.get_json()
+            asyncio.run(process_update(update))
+            return jsonify({"status": "ok"}), 200
+        except Exception as e:
+            logger.error(f"Помилка обробки webhook: {e}")
+            return jsonify({"status": "error", "message": str(e)}), 500
+    return jsonify({"status": "method not allowed"}), 405
 
 
 @app.route('/')
@@ -342,23 +361,29 @@ def analytics():
 
 
 if __name__ == '__main__':
-    # Запускаємо бота в окремому потоці
-    import threading
+    # Ініціалізація бота та встановлення webhook
     import asyncio
-    from bot import main as bot_main
 
-    def run_bot():
-        """Запуск бота в окремому потоці"""
-        try:
-            asyncio.run(bot_main())
-        except Exception as e:
-            logger.error(f"Помилка запуску бота: {e}")
+    # Railway використовує змінну PORT
+    port = int(os.getenv('PORT', os.getenv('FLASK_PORT', 5000)))
 
-    # Запускаємо бота у фоновому режимі
-    bot_thread = threading.Thread(target=run_bot, daemon=True)
-    bot_thread.start()
-    logger.info("Бот запущено у фоновому потоці")
+    # Отримуємо URL від Railway або використовуємо локальний
+    railway_url = os.getenv('RAILWAY_STATIC_URL')  # Railway автоматично встановлює цю змінну
+    webhook_url = os.getenv('WEBHOOK_URL')  # Або вручну задана
+
+    if railway_url:
+        webhook_url = f"https://{railway_url}/webhook"
+    elif webhook_url:
+        webhook_url = f"{webhook_url}/webhook"
+
+    # Встановлюємо webhook при запуску
+    if webhook_url:
+        logger.info(f"Встановлюємо webhook: {webhook_url}")
+        asyncio.run(setup_bot())
+        asyncio.run(set_webhook(webhook_url))
+        logger.info("Бот готовий до роботи через webhook")
+    else:
+        logger.warning("WEBHOOK_URL не встановлено. Бот не буде працювати!")
 
     # Запускаємо Flask веб-сервер
-    port = int(os.getenv('PORT', os.getenv('FLASK_PORT', 5000)))
     app.run(host='0.0.0.0', port=port, debug=os.getenv('FLASK_DEBUG', 'False') == 'True')
