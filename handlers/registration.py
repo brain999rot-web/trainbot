@@ -253,7 +253,7 @@ async def cmd_menu(message: Message):
     """Показати головне меню"""
     await message.answer(
         "📱 **Головне меню**\n\nОбери дію:",
-        reply_markup=get_main_menu_keyboard(, parse_mode="Markdown"),
+        reply_markup=get_main_menu_keyboard(),
         parse_mode="Markdown"
     )
 
