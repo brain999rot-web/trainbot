@@ -15,6 +15,7 @@ from sync_database import SessionLocal, init_sync_db
 import logging
 from sqlalchemy import desc
 import asyncio
+from threading import Thread
 
 load_dotenv()
 
@@ -28,6 +29,26 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 db_session = SessionLocal
+
+# Створюємо глобальний event loop для async операцій
+_event_loop = None
+_loop_thread = None
+
+def get_or_create_event_loop():
+    """Отримати або створити event loop"""
+    global _event_loop, _loop_thread
+
+    if _event_loop is None or _event_loop.is_closed():
+        _event_loop = asyncio.new_event_loop()
+
+        def run_loop():
+            asyncio.set_event_loop(_event_loop)
+            _event_loop.run_forever()
+
+        _loop_thread = Thread(target=run_loop, daemon=True)
+        _loop_thread.start()
+
+    return _event_loop
 
 # Імпортуємо webhook функції
 from bot_webhook import setup_bot, process_update, set_webhook
@@ -61,7 +82,10 @@ def telegram_webhook():
     if request.method == "POST":
         try:
             update = request.get_json()
-            asyncio.run(process_update(update))
+            loop = get_or_create_event_loop()
+            # Запускаємо async функцію в існуючому event loop
+            future = asyncio.run_coroutine_threadsafe(process_update(update), loop)
+            future.result(timeout=10)  # Чекаємо макс 10 секунд
             return jsonify({"status": "ok"}), 200
         except Exception as e:
             logger.error(f"Помилка обробки webhook: {e}")
@@ -361,8 +385,8 @@ def analytics():
 
 
 if __name__ == '__main__':
-    # Ініціалізація бота та встановлення webhook
-    import asyncio
+    # Ініціалізація event loop
+    loop = get_or_create_event_loop()
 
     # Railway використовує змінну PORT
     port = int(os.getenv('PORT', os.getenv('FLASK_PORT', 5000)))
@@ -379,8 +403,10 @@ if __name__ == '__main__':
     # Встановлюємо webhook при запуску
     if webhook_url:
         logger.info(f"Встановлюємо webhook: {webhook_url}")
-        asyncio.run(setup_bot())
-        asyncio.run(set_webhook(webhook_url))
+        future_setup = asyncio.run_coroutine_threadsafe(setup_bot(), loop)
+        future_setup.result(timeout=10)
+        future_webhook = asyncio.run_coroutine_threadsafe(set_webhook(webhook_url), loop)
+        future_webhook.result(timeout=10)
         logger.info("Бот готовий до роботи через webhook")
     else:
         logger.warning("WEBHOOK_URL не встановлено. Бот не буде працювати!")
